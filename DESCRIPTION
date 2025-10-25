@@ -1,0 +1,19 @@
+Package: dwrpubs
+Title: Generate and visualize an inventory of DWR peer-reviewed publications
+Version: 0.0.0.9000
+Authors@R: 
+    person("Lucy", "Andrews", , "lucy.andrews@water.ca.gov", role = c("aut", "cre"))
+Description: Support for generating an inventory of peer-reviewed publications
+    to which the California Department of Water Resources contributed through
+    funding or authorship. The package helps identify and retrieve metadata
+    about publications from manual uploads and API calls so the final inventory
+    can be referenced in reports and dashboards.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 3.5)
+Imports:
+    stringr
+LazyData: true

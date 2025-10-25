@@ -1,2 +1,2 @@
-# dwr-pub-inventory
-An inventory of DWR peer-reviewed publications and visualization dashboard
+# DWR Publication Inventory
+An inventory of DWR peer-reviewed publications and associated visualization dashboard
