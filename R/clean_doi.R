@@ -28,5 +28,6 @@ clean_doi <- function(x) {
   x <- stringr::str_remove_all(x, '^["\\\']|["\\\']$')
 
   dois <- stringr::str_extract(x, '\\b10\\.\\d{4,9}/[^\\s"\\)\\]\\,;]+')
+  dois <- toupper(dois)
   dois[!is.na(dois) & dois != ""]
 }
