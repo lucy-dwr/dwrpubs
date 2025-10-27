@@ -1,5 +1,8 @@
-# Workflow that retrieves Crossref metadata for California Department of Water
-# Resources (DWR) authored or funded works using the functional helpers.
+# Workflow that retrieves California Department of Water Resources authored
+# or funded works using the Crossref functional helpers and then cleans and
+# saves DOIS
+
+load(here::here("data", "dois_drop.rda"))
 
 dwr_pattern <- "California Department of Water Resources"
 from_date <- "2020-01-01"
@@ -24,13 +27,15 @@ cr_strategies <- tibble::tibble(
     list(
       `query.affiliation` = dwr_pattern,
       filters = list(
-        `from-pub-date` = from_date
+        `from-pub-date` = from_date,
+        type = "journal-article"
       )
     ),
     list(
       filters = list(
         funder = dwr_funder_id,
-        `from-pub-date` = from_date
+        `from-pub-date` = from_date,
+        type = "journal-article"
       )
     )
   ),
@@ -41,5 +46,6 @@ cr_strategies <- tibble::tibble(
 cr_dwr_works <- cr_run_strategies(cr_strategies)
 
 dois_crossref <- cr_extract_dois(cr_dwr_works)
+dois_crossref <- dois_crossref[!dois_crossref %in% dois_drop]
 
 usethis::use_data(dois_crossref, overwrite = TRUE)
