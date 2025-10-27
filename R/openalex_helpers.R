@@ -4,6 +4,10 @@
 #' and filtering OpenAlex works. The helpers are designed to be composable so
 #' you can mix & match fetch, filter, and extraction steps when new retrieval
 #' strategies are needed.
+#'
+#' @keywords internal
+#' @name openalex_helpers
+#' @noRd
 NULL
 
 #' Fetch OpenAlex works with readable defaults
@@ -96,6 +100,93 @@ oa_filter_authorships <- function(works, pattern, matcher = oa_match_authorship_
 
   mask <- purrr::map_lgl(works$authorships, matcher, pattern = pattern, ...)
   dplyr::filter(works, mask)
+}
+
+#' Collect unique affiliations across OpenAlex authorships
+#'
+#' @param authorships Tibble/list from the `authorships` column of an OpenAlex work.
+#' @param fields Candidate column names used when traversing nested affiliation tables.
+#'
+#' @return Character vector of unique affiliation strings (possibly length zero).
+#'
+#' @export
+extract_openalex_affiliations <- function(
+  authorships,
+  fields = c("display_name", "name", "affiliation_raw", "raw_affiliation")
+) {
+  if (is.null(authorships) || !NROW(authorships)) {
+    return(character())
+  }
+
+  values <- purrr::map(
+    seq_len(nrow(authorships)),
+    function(i) collect_openalex_affiliations(
+      authorships[i, , drop = FALSE],
+      fields = fields
+    )
+  )
+
+  if (!length(values)) {
+    return(character())
+  }
+
+  values <- unlist(values, use.names = FALSE)
+
+  if (!length(values)) {
+    return(character())
+  }
+
+  values <- trimws(as.character(values))
+  values <- values[nzchar(values) & !is.na(values)]
+  unique(values)
+}
+
+collect_openalex_affiliations <- function(row, fields) {
+  if (is.null(row) || !NROW(row)) {
+    return(character())
+  }
+
+  values <- character()
+
+  add_values <- function(x) {
+    if (is.null(x) || !length(x)) {
+      return()
+    }
+
+    if (is.list(x)) {
+      x <- unlist(x, recursive = TRUE, use.names = FALSE)
+    }
+
+    vals <- trimws(as.character(x))
+    vals <- vals[nzchar(vals)]
+    if (length(vals)) {
+      values <<- c(values, vals)
+    }
+  }
+
+  raw_cols <- intersect(c("affiliation_raw", "raw_affiliation"), names(row))
+  for (col in raw_cols) {
+    add_values(row[[col]])
+  }
+
+  if ("affiliations" %in% names(row)) {
+    aff <- row$affiliations[[1]]
+
+    if (is.data.frame(aff) && NROW(aff)) {
+      cols <- intersect(fields, names(aff))
+      if (length(cols)) {
+        add_values(unlist(aff[cols], use.names = FALSE))
+      } else {
+        add_values(apply(aff, 1, paste, collapse = " "))
+      }
+    } else if (is.list(aff)) {
+      add_values(unlist(aff, use.names = FALSE))
+    } else if (!is.null(aff)) {
+      add_values(aff)
+    }
+  }
+
+  unique(values)
 }
 
 #' Extract DOI values from OpenAlex works
