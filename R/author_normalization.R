@@ -1,9 +1,9 @@
-#' Author processing helpers
+#' Author normalization helpers
 #'
 #' Utility functions for working with Crossref and OpenAlex author data.
 #'
 #' @keywords internal
-#' @name author_processing_helpers
+#' @name author_normalization_helpers
 #' @noRd
 NULL
 
