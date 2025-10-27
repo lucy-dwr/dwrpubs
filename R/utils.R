@@ -14,3 +14,21 @@
 `%||%` <- function(x, y) {
   if (is.null(x)) y else x
 }
+
+#' Split a vector into equally sized chunks
+#'
+#' Convenience wrapper used to batch large vectors in API requests.
+#'
+#' @param x Vector to split.
+#' @param size Maximum chunk size.
+#'
+#' @return A list of vector chunks (possibly empty).
+#'
+#' @export
+chunk_vector <- function(x, size) {
+  if (!length(x)) {
+    return(list())
+  }
+
+  split(x, ceiling(seq_along(x) / size))
+}
