@@ -51,3 +51,4 @@ rsconnect/
 
 # private files
 data-raw/dwr_employee_division_year.csv
+data/employees.rda
