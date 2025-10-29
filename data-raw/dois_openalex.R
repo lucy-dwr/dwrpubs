@@ -1,6 +1,7 @@
-# Workflow that retrieves California Department of Water Resources authored
-# or funded works using the OpenAlex functional helpers and then cleans and
-# saves DOIS
+# ---
+# Purpose: Retrieve DWR-authored or funded works from OpenAlex and save
+# the cleaned DOI list.
+# ---
 
 load(here::here("data", "dois_drop.rda"))
 

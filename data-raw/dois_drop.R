@@ -1,5 +1,7 @@
-# List of DOIs that might be pulled in API calls but should be
-# excluded from analysis.
+# ---
+# Purpose: Maintain a list of DOIs that should be excluded from downstream
+# DWR analyses.
+# ---
 
 dois_drop <- c(
   "10.1016/j.gsd.2024.101252",
@@ -60,7 +62,12 @@ dois_drop <- c(
   "10.1109/ispa63168.2024.00149",
   "10.1109/iccst53801.2021.00094",
   "10.1109/ifeea57288.2022.10038248",
-  "10.1109/ifeea57288.2022.10038251"
+  "10.1109/ifeea57288.2022.10038251",
+  "10.46275/joasc.2020.01.002",
+  "10.1109/lgrs.2025.3607411",
+  "10.1016/j.jhydrol.2025.133230",
+  "10.1016/j.algal.2025.104083",
+  "10.1016/j.tafmec.2025.105172"
 )
 
 dois_drop <- clean_doi(dois_drop)

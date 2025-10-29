@@ -1,4 +1,6 @@
-# Workflow that cleans and saves DOIs supplied manually.
+# ---
+# Purpose: Clean manually curated DWR DOIs before storing them as package data.
+# ---
 
 load(here::here("data", "dois_drop.rda"))
 
