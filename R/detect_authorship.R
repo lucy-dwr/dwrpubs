@@ -22,7 +22,7 @@
 #' @return `data` with one or more added logical columns.
 #'
 #' @export
-authorship_detection <- function(
+detect_authorship <- function(
   data,
   pattern,
   source = c("crossref", "openalex"),

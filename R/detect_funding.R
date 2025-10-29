@@ -1,13 +1,13 @@
 #' Detect funding matches on works
 #'
-#' @inheritParams authorship_detection
+#' @inheritParams detect_authorship
 #' @param flag_column Name of the logical column added to the data; defaults to
 #'   ``"has_funding_match"``.
 #'
 #' @return `data` with a logical funding indicator.
 #'
 #' @export
-funding_detection <- function(
+detect_funding <- function(
   data,
   pattern,
   source = c("crossref", "openalex"),
