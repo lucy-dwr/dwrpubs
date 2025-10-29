@@ -107,6 +107,12 @@ fetch_openalex_metadata <- function(dois, pause = 0.1, progress = interactive())
       return(tibble::tibble())
     }
 
-    tibble::as_tibble(result)
+    result_tbl <- tibble::as_tibble(result)
+
+    if ("abstract" %in% names(result_tbl)) {
+      result_tbl$abstract <- strip_abstract_prefixes(result_tbl$abstract)
+    }
+
+    result_tbl
   })
 }

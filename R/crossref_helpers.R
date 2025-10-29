@@ -325,8 +325,6 @@ clean_jats_abstract <- function(abstract) {
       text <- sub("^Abstract", "", text)
     }
 
-    text <- trimws(text)
-
-    text
+    strip_abstract_prefixes(text)
   })
 }
