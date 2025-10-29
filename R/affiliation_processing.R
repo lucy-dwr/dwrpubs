@@ -996,10 +996,9 @@ institution_suffix_rules <- function() {
   stats::setNames(
     c(
       "Cornell University",
-      "Macalester College",
       "Rutgers University"
     ),
-    tolower(c("Cornell", "Macalester", "Rutgers"))
+    tolower(c("Cornell", "Rutgers"))
   )
 }
 
