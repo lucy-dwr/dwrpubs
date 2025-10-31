@@ -125,6 +125,111 @@ build_openalex_author_affiliations <- function(
   results
 }
 
+#' Build author-affiliation pairs from Crossref author data
+#'
+#' Normalizes a Crossref `author` entry into a tidy tibble pairing each author
+#' with the affiliation string supplied by Crossref.
+#'
+#' @param authors Crossref author data; typically a tibble or list structure as
+#'   produced by `cr_fetch_works()` and normalized with `format_crossref_authors()`.
+#'
+#' @return Tibble with columns `author` and `affiliation`. Returns zero rows
+#'   when no author data is available.
+#'
+#' @keywords internal
+build_crossref_author_affiliations <- function(authors) {
+  empty_result <- function() {
+    tibble::tibble(
+      author = character(),
+      affiliation = character()
+    )
+  }
+
+  if (is.null(authors) || !length(authors)) {
+    return(empty_result())
+  }
+
+  normalized <- normalize_crossref_authors(authors)
+  if (!nrow(normalized)) {
+    return(empty_result())
+  }
+
+  names <- trimws(as.character(normalized$author_name))
+  names[!nzchar(names)] <- NA_character_
+
+  affiliations <- trimws(as.character(normalized$author_affiliation))
+  affiliations[!nzchar(affiliations)] <- NA_character_
+
+  result <- tibble::tibble(
+    author = names,
+    affiliation = affiliations
+  )
+
+  mask <- is.na(result$author) & is.na(result$affiliation)
+  if (any(mask)) {
+    result <- result[!mask, , drop = FALSE]
+  }
+
+  result
+}
+
+extract_crossref_affiliations <- function(author_affiliations) {
+  if (is.null(author_affiliations) || !is.data.frame(author_affiliations) || !nrow(author_affiliations)) {
+    return(character())
+  }
+
+  if (!"affiliation" %in% names(author_affiliations)) {
+    return(character())
+  }
+
+  values <- trimws(as.character(author_affiliations$affiliation))
+  values <- values[!is.na(values) & nzchar(values)]
+  unique(values)
+}
+
+canonicalize_crossref_author_affiliations <- function(author_affiliations, lookup) {
+  empty_result <- function() {
+    tibble::tibble(
+      author = character(),
+      canonical_affiliation = character()
+    )
+  }
+
+  if (is.null(author_affiliations) || !is.data.frame(author_affiliations) || !nrow(author_affiliations)) {
+    return(empty_result())
+  }
+
+  authors <- as.character(author_affiliations$author)
+  raw_affiliations <- if ("affiliation" %in% names(author_affiliations)) {
+    author_affiliations$affiliation
+  } else {
+    rep(NA_character_, length(authors))
+  }
+
+  raw_affiliations <- trimws(as.character(raw_affiliations))
+  raw_affiliations[!nzchar(raw_affiliations)] <- NA_character_
+
+  canonical <- rep(NA_character_, length(raw_affiliations))
+  if (!is.null(lookup) && nrow(lookup)) {
+    matches <- lookup$canonical[match(raw_affiliations, lookup$original)]
+    canonical <- ifelse(is.na(matches), NA_character_, matches)
+  }
+
+  result <- tibble::tibble(
+    author = authors,
+    canonical_affiliation = canonical
+  )
+
+  result$canonical_affiliation <- normalize_canonical_output(result$canonical_affiliation)
+
+  mask <- is.na(result$author) & is.na(result$canonical_affiliation)
+  if (any(mask)) {
+    result <- result[!mask, , drop = FALSE]
+  }
+
+  result
+}
+
 #' Normalize Crossref author structures into nested tibbles
 #'
 #' Converts the heterogeneous author entries returned by Crossref into a tidy
