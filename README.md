@@ -1,11 +1,11 @@
 # DWR Publication Inventory
 <img src="man/figures/dwr-logo.png" alt="California Department of Water Resources logo" align="right" width="150" />  
 
-`dwrpubs` builds a curated inventory of peer-reviewed publications that the California Department of Water Resources supported through funding or authorship. The package pulls together manual DOI curation, Crossref and OpenAlex harvesting, metadata normalization, and discipline tagging so staff can publish consistent peer-reviewed manuscript inventories for reports, dashboards, and other communications.
+`dwrpubs` builds a curated inventory of peer-reviewed publications that the [California Department of Water Resources](https://water.ca.gov) supported through funding or authorship. The package pulls together manual [DOI](https://www.doi.org/the-identifier/what-is-a-doi/) curation, [Crossref](https://www.crossref.org) and [OpenAlex](https://openalex.org) harvesting, metadata normalization, and discipline tagging so staff can publish consistent peer-reviewed manuscript inventories for reports, dashboards, and other communications. Large language models (LLMs) are used to standardize and classify unstructured text.
 
 ## At a Glance
-- **Inputs**: DOI lists (`data-raw/dois_*`), Crossref metadata API results, OpenAlex metadata API results, and staff rosters for attribution.
-- **Processing**: normalization pipelines for authors, affiliations, and contribution flags plus user-guided overrides stored.
+- **Inputs**: DOI lists, Crossref metadata API results, OpenAlex metadata API results, and staff rosters for attribution.
+- **Processing**: normalization pipelines for authors, affiliations, and contribution flags plus user-guided overrides.
 - **Classification**: LLM-powered discipline tagging against a user-supplied taxonomy.
 - **Outputs**: ready-to-use datasets and a human-readable, denormalized inventory CSV file.
 
@@ -16,8 +16,8 @@ _Forthcoming._
 _Forthcoming._
 
 ## LLM-Assisted Processing
-- **Affiliation cleanup**: [`data-raw/all_metadata.R`](data-raw/all_metadata.R) optionally calls Gemini models to canonicalize institution names pulled from Crossref and OpenAlex, falling back to cached lookups when API credentials are unavailable.
-- **Discipline tagging**: [`data-raw/classified_inventory.R`](data-raw/classified_inventory.R) batches article titles and abstracts through Gemini, seeding the prompt with the user-maintained taxonomy (`data/disciplines_taxonomy.rda`) so classifications adhere to that controlled vocabulary—a lightweight RAG pattern.
+- **Affiliation cleanup**: [`data-raw/all_metadata.R`](data-raw/all_metadata.R) optionally calls LLMs to canonicalize institution names pulled from Crossref and OpenAlex, falling back to cached lookups when API credentials are unavailable or the user does not wish to generate a new lookup object.
+- **Discipline tagging**: [`data-raw/classified_inventory.R`](data-raw/classified_inventory.R) batches article titles and abstracts through Gemini, seeding the prompt with the user-maintained taxonomy (`data/disciplines_taxonomy.rda`) so that classifications adhere to that controlled vocabulary—a lightweight RAG pattern.
 
 ## Roadmap for Future Work
 ### Documentation
@@ -30,6 +30,7 @@ _Forthcoming._
 - [ ] Create automated tests for package functions.
 - [ ] Wrap the [`data-raw/`](data-raw/) scripts in a reproducible refresh pipeline that handles API credentials.
 - [ ] Configure CI to run `R CMD check` and guard the data and package refresh process.
+- [ ] Add README on LLMs for unstructured text parsing and classification, including commentary on non-deterministic behavior.
 
 ### Products
 - [ ] Create a visualization dashboard, static figures, and other communications products.
