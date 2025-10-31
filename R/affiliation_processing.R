@@ -130,7 +130,9 @@ canonicalize_affiliation_values <- function(
   }
 
   lookup$canonical_raw <- lookup$canonical
+  lookup <- apply_affiliation_overrides(lookup)
   lookup$canonical <- finalize_canonical_values(lookup$canonical_raw)
+  lookup$canonical <- normalize_canonical_output(lookup$canonical)
 
   lookup[, c("original", "canonical")]
 }
@@ -664,7 +666,125 @@ map_canonical_affiliations <- function(affiliations, lookup) {
 
   matches <- lookup$canonical[match(affiliations, lookup$original)]
   matches <- matches[!is.na(matches)]
-  unique(matches)
+  matches <- unique(matches)
+  normalize_canonical_output(matches)
+}
+
+#' Apply manual overrides to canonical affiliation values.
+#'
+#' Ensures that high-priority institutions are harmonised even when the LLM
+#' returns inconsistent values.
+#'
+#' @param lookup Lookup tibble with `original` and `canonical_raw` columns.
+#'
+#' @return Updated lookup tibble.
+#'
+#' @noRd
+apply_affiliation_overrides <- function(lookup) {
+  if (!nrow(lookup)) {
+    return(lookup)
+  }
+
+  canonical <- as.character(lookup$canonical_raw)
+  original <- as.character(lookup$original)
+
+  contains <- function(x, pattern) {
+    !is.na(x) & stringr::str_detect(x, stringr::regex(pattern, ignore_case = TRUE))
+  }
+
+  is_exact <- function(x, value) {
+    !is.na(x) & x == value
+  }
+
+  mask <- contains(original, "National Ecological Observation Network")
+  canonical[mask] <- "National Ecological Observation Network Battelle"
+
+  mask <- contains(original, "CONICET")
+  canonical[mask] <- "CONICET"
+
+  mask <- contains(original, "Ducks Unlimited")
+  canonical[mask] <- "Ducks Unlimited"
+
+  mask <- is_exact(canonical, "Environmental Protection Agency")
+  canonical[mask] <- "United States Environmental Protection Agency"
+
+  mask <- contains(canonical, "Cramer Fish Sciences")
+  canonical[mask] <- "Cramer Fish Sciences"
+
+  mask <- contains(canonical, "Ramboll")
+  canonical[mask] <- "Ramboll"
+
+  mask <- contains(original, "Broad Institute")
+  canonical[mask] <- "Broad Institute"
+
+  mask <- !is.na(original) & stringr::str_detect(original, "NCAR")
+  canonical[mask] <- "National Center for Atmospheric Research"
+
+  mask <- !is.na(canonical) & canonical == "NA"
+  canonical[mask] <- NA_character_
+
+  mask <- is_exact(canonical, "National Aeronautics and Space Administration")
+  canonical[mask] <- "United States National Aeronautics and Space Administration"
+
+  mask <- is_exact(canonical, "National Park Service")
+  canonical[mask] <- "United States National Park Service"
+
+  mask <- is_exact(canonical, "North West Research Associates")
+  canonical[mask] <- "NorthWest Research Associates"
+
+  mask <- is_exact(canonical, "Ohio State University")
+  canonical[mask] <- "The Ohio State University"
+
+  mask <- contains(canonical, "Rutgers")
+  canonical[mask] <- "Rutgers University"
+
+  mask <- contains(original, "NOAA/Earth System")
+  canonical[mask] <- "United States National Oceanic and Atmospheric Administration"
+
+  mask <- contains(canonical, "United States Geological Survey")
+  canonical[mask] <- "United States Geological Survey"
+
+  mask <- contains(canonical, "ICF")
+  canonical[mask] <- "ICF"
+
+  canonical <- ifelse(
+    is.na(canonical),
+    NA_character_,
+    stringr::str_remove(canonical, stringr::regex("^The\\s+", ignore_case = TRUE))
+  )
+
+  lookup$canonical_raw <- canonical
+  lookup
+}
+
+normalize_canonical_output <- function(values) {
+  if (is.null(values) || !length(values)) {
+    return(values)
+  }
+
+  out <- values
+
+  replace_if <- function(mask, replacement) {
+    if (any(mask, na.rm = TRUE)) {
+      out[mask] <<- replacement
+    }
+  }
+
+  replace_if(stringr::str_detect(out, stringr::regex("United States Geological Survey", ignore_case = TRUE)), "United States Geological Survey")
+  replace_if(stringr::str_detect(out, stringr::regex("National Aeronautics and Space Administration", ignore_case = TRUE)), "United States National Aeronautics and Space Administration")
+  replace_if(stringr::str_detect(out, stringr::regex("Rutgers", ignore_case = TRUE)), "Rutgers University")
+  replace_if(stringr::str_detect(out, stringr::regex("Cramer Fish Sciences", ignore_case = TRUE)), "Cramer Fish Sciences")
+  replace_if(stringr::str_detect(out, stringr::regex("\\bICF\\b", ignore_case = TRUE)), "ICF")
+  replace_if(stringr::str_detect(out, stringr::regex("United States Environmental Protection Agency", ignore_case = TRUE)), "United States Environmental Protection Agency")
+
+  out <- ifelse(
+    is.na(out),
+    NA_character_,
+    stringr::str_remove(out, stringr::regex("^The\\s+", ignore_case = TRUE))
+  )
+
+  out[out == "NA"] <- NA_character_
+  out
 }
 
 #' Split a sequence of indices into evenly sized groups.
