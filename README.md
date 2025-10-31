@@ -1,5 +1,6 @@
 # DWR Publication Inventory
-`dwrpubs` builds a curated inventory of peer-reviewed publications connected to the California Department of Water Resources. It combines manually maintained DOI lists with Crossref and OpenAlex fetchers, uses LLM-assisted steps for author affiliation canonicalization and discipline classification, and produces ready-to-use datasets for reports and dashboard visualizations.
+<img src="man/figures/dwr-logo.png" alt="California Department of Water Resources logo" align="right" width="150" />
+`dwrpubs` builds a curated inventory of peer-reviewed publications connected to the California Department of Water Resources through funding and/or authorship. It combines manually maintained DOI lists with Crossref and OpenAlex fetchers, uses LLM-assisted steps for author affiliation canonicalization and discipline classification, and produces ready-to-use datasets for reports and dashboard visualizations.
 
 ## LLM-Assisted Processing
 - Affiliation cleanup: [`data-raw/all_metadata.R`](data-raw/all_metadata.R) optionally calls Gemini models to canonicalize institution names pulled from Crossref and OpenAlex, falling back to cached lookups when API credentials are absent.
