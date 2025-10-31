@@ -3,6 +3,7 @@
 #' Utilities for applying manual name replacements across the nested author
 #' structures produced during metadata harmonisation.
 #'
+#' @name author_postprocessing
 #' @keywords internal
 NULL
 
