@@ -1,14 +1,28 @@
 # DWR Publication Inventory
-<img src="man/figures/dwr-logo.png" alt="California Department of Water Resources logo" align="right" width="150" />
-`dwrpubs` builds a curated inventory of peer-reviewed publications connected to the California Department of Water Resources through funding and/or authorship. It combines manually maintained DOI lists with Crossref and OpenAlex fetchers, uses LLM-assisted steps for author affiliation canonicalization and discipline classification, and produces ready-to-use datasets for reports and dashboard visualizations.
+<img src="man/figures/dwr-logo.png" alt="California Department of Water Resources logo" align="right" width="150" />  
+
+`dwrpubs` builds a curated inventory of peer-reviewed publications that the California Department of Water Resources supported through funding or authorship. The package pulls together manual DOI curation, Crossref and OpenAlex harvesting, metadata normalization, and discipline tagging so staff can publish consistent peer-reviewed manuscript inventories for reports, dashboards, and other communications.
+
+## At a Glance
+- **Inputs**: DOI lists (`data-raw/dois_*`), Crossref metadata API results, OpenAlex metadata API results, and staff rosters for attribution.
+- **Processing**: normalization pipelines for authors, affiliations, and contribution flags plus user-guided overrides stored.
+- **Classification**: LLM-powered discipline tagging against a user-supplied taxonomy.
+- **Outputs**: ready-to-use datasets and a human-readable, denormalized inventory CSV file.
+
+## Quick Start
+_Forthcoming._
+
+## Data Refresh Workflow
+_Forthcoming._
 
 ## LLM-Assisted Processing
-- Affiliation cleanup: [`data-raw/all_metadata.R`](data-raw/all_metadata.R) optionally calls Gemini models to canonicalize institution names pulled from Crossref and OpenAlex, falling back to cached lookups when API credentials are absent.
-- Discipline tagging: [`data-raw/classified_inventory.R`](data-raw/classified_inventory.R) batches article titles and abstracts through Gemini for taxonomy-based classification, storing the resulting labels, explanations, and confidence scores.
-- Author overrides: helper functions in [`R/author_normalization.R`](R/author_normalization.R) can be guided by LLM-normalized name mappings when new spelling variations are detected.
+- **Affiliation cleanup**: [`data-raw/all_metadata.R`](data-raw/all_metadata.R) optionally calls Gemini models to canonicalize institution names pulled from Crossref and OpenAlex, falling back to cached lookups when API credentials are unavailable.
+- **Discipline tagging**: [`data-raw/classified_inventory.R`](data-raw/classified_inventory.R) batches article titles and abstracts through Gemini, seeding the prompt with the user-maintained taxonomy (`data/disciplines_taxonomy.rda`) so classifications adhere to that controlled vocabulary—a lightweight RAG pattern.
 
 ## Roadmap for Future Work
 ### Documentation
+- [ ] Add quick-start instructions to this README.
+- [ ] Document the use and expansion of manual overrides in automated processing scripts.
 - [ ] Flesh out [`vignettes/generate_inventory.qmd`](vignettes/generate_inventory.qmd) with an end-to-end workflow walkthrough.
 - [ ] Add package-level documentation that introduces the data objects and exported helpers.
 
@@ -18,7 +32,7 @@
 - [ ] Configure CI to run `R CMD check` and guard the data and package refresh process.
 
 ### Products
-- [ ] Create a visualization dashboard and other communications products.
+- [ ] Create a visualization dashboard, static figures, and other communications products.
 
 ## License
 Released under the [MIT License](LICENSE.md).
