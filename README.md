@@ -7,7 +7,7 @@
 - **Inputs**: DOI lists, Crossref metadata API results, OpenAlex metadata API results, and staff rosters for attribution.
 - **Processing**: normalization pipelines for authors, affiliations, and contribution flags plus user-guided overrides.
 - **Classification**: LLM-powered discipline tagging against a user-supplied taxonomy.
-- **Outputs**: ready-to-use datasets and a human-readable, denormalized inventory CSV file.
+- **Outputs**: ready-to-use datasets and a human-readable, denormalized [inventory CSV file](output/final_inventory.csv).
 
 ## Quick Start
 _Forthcoming._
