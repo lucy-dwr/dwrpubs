@@ -1,0 +1,12 @@
+---
+title: "Classify Publications"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
